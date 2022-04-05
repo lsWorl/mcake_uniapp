@@ -26,3 +26,9 @@ export const $get = function(url,data={}) {
 export const $post = function(url,data={}) {
 	return $http(url,'POST',data)
 }
+export const $put = function(url,data={}) {
+	return $http(url,'PUT',data)
+}
+export const $delete = function(url,data={}) {
+	return $http(url,'DELETE',data)
+}

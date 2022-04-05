@@ -1,6 +1,5 @@
 <template>
 	<view>
-		<nav-custom></nav-custom>
 		<view class="cont">
 			<good-item v-for="(item,index) in glist" :gdata="item"></good-item>
 			<view class="fixed flex bg-fff justify-center padding-sm">
@@ -13,7 +12,9 @@
 			<u-popup :show="show" mode="left" @close="handleClose" @open="open">
 				<view class="pop-cont">
 					<view v-for="(item,index) in cfylist" class="padding-sm u-border-bottom">
-						{{item.item.bname}}
+						<view @click="handleList(item,0)">
+							{{item.item.bname}}
+						</view>
 						<view v-if="index==0">
 							<view @click="listShow = !listShow"
 								class="padding-tb-sm margin-top u-border-top u-border-bottom">
@@ -51,10 +52,10 @@
 
 <script>
 	export default {
+		name:"tab-custom",
 		data() {
 			return {
 				glist: [],
-				page: 0,
 				tabArr: [{
 						name: '分类',
 						bcid: '',
@@ -63,17 +64,17 @@
 					{
 						name: '蛋糕',
 						bcid: '1',
-						target: '/pages/cake'
+						target: '/pages/cake/cake'
 					},
 					{
 						name: '面包',
 						bcid: '11',
-						target: '/pages/bread'
+						target: '/pages/cake/cake'
 					},
 					{
 						name: '小食',
 						bcid: '6',
-						target: '/pages/food'
+						target: '/pages/cake/cake'
 					},
 					{
 						name: '购物车',
@@ -84,45 +85,14 @@
 				show: false,
 				cfylist: [],
 				sceneShow: false,
-				listShow: false
-			}
+			};
 		},
-		computed: {
-			condition() {
-				return this.$store.state.condition.cond
-			}
+		created() {
+			this.$get('/1.1/classes/classify').then(res => {
+				this.cfylist = res.results
+			})
 		},
-		methods: {
-			handleDtail(idx) {
-				uni.navigateTo({
-					url: '../detail/detail?idx=' + idx
-				})
-			},
-			loadData() {
-				let ship = this.page * 8
-				let wh = JSON.stringify(this.condition)
-				let url = `/1.1/classes/goods?where=${wh}&limit=8&skip=${ship}`
-				this.$get(url).then(res => {
-					setTimeout(function() {
-						uni.stopPullDownRefresh()
-					}, 1000)
-					let {
-						results
-					} = res
-					if (results.length) {
-						this.page++
-						this.glist = [
-							...this.glist,
-							...res.results
-						]
-						return
-					}
-					uni.showToast({
-						title: '这回真没了',
-						icon: 'none'
-					})
-				})
-			},
+		methods:{
 			handleTab(item) {
 				let {
 					bcid,
@@ -132,7 +102,9 @@
 					this.$store.commit('changeCondition', {
 						bcid: parseInt(bcid)
 					})
-					this.reloadData()
+					uni.navigateTo({
+						url:target
+					})
 				}
 				if (!bcid && !target) {
 					this.show = true
@@ -149,71 +121,20 @@
 			handList({bid,tid},type) {
 				console.log(bid,tid)
 				let obj = {bcid:bid}
-				type === 1 ? obj.fid = tid : obj.sid = tid
+				if(type===1){obj.fid = tid}
+				if(type===2){obj.sid = tid}
 				this.$store.commit('changeCondition',obj)
-				this.reloadData()
-			},
-			reloadData() {
-				this.glist = []
-				this.page = 0
-				this.loadData()
+				this.show = false
+				uni.navigateTo({
+					url:`/pages/cake/cake`
+				})
 			}
-		},
-		onLoad() {
-			this.loadData()
-			// ajax请求分类数据
-			this.$get('/1.1/classes/classify').then(res => {
-				this.cfylist = res.results
-			})
-		},
-		onReachBottom() {
-			this.loadData()
-		},
-		onPullDownRefresh() {
-			reloadData()
 		}
 	}
 </script>
 
 <style lang="scss">
-	page {
-		padding: 90upx 0upx 120upx;
-	}
-
-	.cake-item {
-		width: 350upx;
-
-		.poster {
-			height: 350upx;
-			background-color: #f5f5f5;
-		}
-
-		.fs-28 {
-			margin-top: 24upx;
-		}
-
-		.fs-20 {
-			margin-top: 16upx;
-		}
-	}
-
-	.cont {
-		display: flex;
-		flex-wrap: wrap;
-		padding: 15upx;
-		justify-content: space-between;
-	}
-
-	.fixed {
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		width: 100%;
-		box-shadow: 0 0 10upx 2upx rgba(0, 0, 0, 0.2);
-		cursor: pointer;
-	}
-
-	.pop-cont {
+.pop-cont {
 		width: 350upx;
 		margin-top: 200upx;
 	}

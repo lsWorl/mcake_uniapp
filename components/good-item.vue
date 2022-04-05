@@ -1,26 +1,26 @@
 <template>
 	<view>
-		<view class="cake-item">
-			<view class="poster">
-
+		<view class="cake-item" @click="handleDetail">
+			<view>
+				<image class="poster" :src="gdata.item.img"></image>
 			</view>
 			<view class="info-cont">
 				<view class="info flex align-center justify-between">
 					<view class="">
 						<view class="fs-28">
-							草莓蛋糕
+							{{gdata.item.name}}
 						</view>
 						<view class="fs-20">
-							Caomei dangao
+							{{gdata.item.french}}
 						</view>
 					</view>
-					<view class="cart-btn margin-right-sm">
+					<view @click.stop="handleCartAdd" class="cart-btn margin-right-sm">
 						<text class="iconfont icon-gouwuchekong"></text>
 					</view>
 				</view>
 				<view class="fs-18">
 					<text class="fs-14">￥</text>
-					218.00
+					{{gdata.item.price}}
 				</view>
 			</view>
 		</view>
@@ -35,6 +35,26 @@
 			return {
 
 			};
+		},
+		props:['gdata'],
+		methods:{
+			handleDetail() {
+				uni.setStorage({
+					key:'detail',
+					data:this.gdata,
+					success: () => {
+						uni.navigateTo({
+							url:'/pages/detail/detail'
+						})
+					}
+				})
+			},
+			handleCartAdd(){
+				this.$store.commit('cart/cartAddMut',{
+					...this.gdata.item,
+					idx:0
+				})
+			}
 		}
 	}
 </script>

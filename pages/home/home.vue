@@ -28,7 +28,7 @@
 				<text class="iconfont icon-fanhuidingbu"></text>
 			</view>
 		</view>
-
+		<tab-custom></tab-custom>
 	</scroll-view>
 </template>
 

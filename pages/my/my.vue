@@ -5,8 +5,8 @@
 			<view class="text-center">
 				<image class="avatar" src="../../static/logo.png" mode=""></image>
 			</view>
-			<view class="fs-28 text-center">
-				张三丰
+			<view class="fs-28 text-center" @click="handleUser">
+				{{username}}
 			</view>
 			<view class="flex grid ">
 				<view v-for="(item,index) in gridArr" class="flex margin flex-direction align-center">
@@ -45,6 +45,20 @@
 					}
 				]
 			};
+		},
+		methods:{
+			handleUser(){
+				uni.navigateTo({
+					url:'../user/login'
+				})
+			}
+		},
+		computed:{
+			username() {
+				let {userInfo} = this.$store.state.user
+				let name = userInfo ? userInfo.username :'尚未登录'
+				return name
+			}
 		}
 	}
 </script>
